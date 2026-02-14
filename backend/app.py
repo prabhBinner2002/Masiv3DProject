@@ -14,11 +14,15 @@ def create_app():
     app.config.from_object(Config)
 
     uri = app.config.get("SQLALCHEMY_DATABASE_URI") or ""
-    if "sqlite" in uri and "instance" in uri:
-        instance_dir = app.instance_path
+    if "sqlite" in uri:
+        instance_dir = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "instance"
+        )
         os.makedirs(instance_dir, exist_ok=True)
         db_path = os.path.join(instance_dir, "masiv.db")
-        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + db_path.replace("\\", "/")
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + db_path.replace(
+            "\\", "/"
+        )
 
     CORS(app)
     db.init_app(app)
@@ -32,6 +36,7 @@ def create_app():
 
     app.register_blueprint(api_bp)
     return app
+
 
 app = create_app()
 
